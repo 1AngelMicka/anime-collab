@@ -1,25 +1,30 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+// eslint.config.mjs
+import next from 'eslint-config-next'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+/** @type {import('eslint').Linter.FlatConfig[]} */
+export default [
+  // Preset officiel Next.js (React, TS, a11y, web-vitals)
+  ...next(),
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Ton réglage perso (ajuste à ton goût)
   {
-    ignores: [
-      "node_modules/**",
-      ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
-    ],
-  },
-];
+    rules: {
+      // --- bruits courants ---
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-alert': 'off',
 
-export default eslintConfig;
+      // TypeScript
+      '@typescript-eslint/no-explicit-any': 'off', // passe en 'warn' si tu veux
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }
+      ],
+
+      // React/JSX
+      'react/jsx-key': 'warn',
+
+      // Next.js core web vitals (évite les faux positifs en dev)
+      '@next/next/no-img-element': 'off', // on utilise <img> simple ici
+    },
+  },
+]
